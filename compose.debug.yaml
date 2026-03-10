@@ -1,0 +1,6 @@
+services:
+  fypsmarttollplazaauditsystem:
+    image: fypsmarttollplazaauditsystem
+    build:
+      context: .
+      dockerfile: ./Dockerfile

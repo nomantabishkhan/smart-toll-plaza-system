@@ -1,0 +1,6 @@
+[2026-03-02 15:02:08,604: INFO/MainProcess] Connected to sqla+sqlite:///D:\pc data\projects\fyp smart toll plaza audit system\backend\celery_broker.db
+[2026-03-02 15:02:08,683: INFO/MainProcess] celery@DESKTOP-QVPA4A6 ready.
+[2026-03-02 15:04:07,250: INFO/MainProcess] Task smarttoll.toll.tasks.process_video_upload_task[3b44e951-a19e-47ce-a5cc-ebf3be85ec66] received
+[2026-03-02 15:04:33,313: INFO/MainProcess] Task smarttoll.toll.tasks.process_video_upload_task[3b44e951-a19e-47ce-a5cc-ebf3be85ec66] succeeded in 26.036416899994947s: None
+[2026-03-02 15:04:33,425: INFO/MainProcess] Task smarttoll.toll.tasks.generate_daily_audit_task[7b5965e8-0191-4320-9618-43127ac1e35e] received
+[2026-03-02 15:04:33,812: INFO/MainProcess] Task smarttoll.toll.tasks.generate_daily_audit_task[7b5965e8-0191-4320-9618-43127ac1e35e] succeeded in 0.367661299998872s: '2026-03-02'
