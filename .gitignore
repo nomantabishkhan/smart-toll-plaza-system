@@ -2,15 +2,24 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyo
+*.pyd
+.pytest_cache/
 
 # Virtual environments
 .venv/
 venv/
 backend/.venv/
 
-# Django local files
+# Environment files
+.env
+backend/.env
+
+# Django local/runtime files
 backend/db.sqlite3
 backend/media/uploads/
+backend/*.log
+backend/*.db
 
 # OS / editor
 .DS_Store
