@@ -38,6 +38,7 @@ class VideoUpload(models.Model):
     file = models.FileField(upload_to="uploads/")
     uploaded_by = models.ForeignKey("auth.User", on_delete=models.CASCADE)
     processing_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="PENDING")
+    progress = models.IntegerField(default=0)  # 0-100 %
     upload_timestamp = models.DateTimeField(auto_now_add=True)
     completion_timestamp = models.DateTimeField(null=True, blank=True)
     log = models.TextField(blank=True)

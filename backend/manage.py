@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 import os
 import sys
+import warnings
+
+# Suppress requests/chardet version mismatch (chardet 7.x from reportlab
+# triggers a stale check_compatibility assertion in requests).
+warnings.filterwarnings("ignore", message="urllib3.*chardet.*charset_normalizer")
+
 
 def main():
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "smarttoll.settings")

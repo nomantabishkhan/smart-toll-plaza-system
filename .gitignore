@@ -25,3 +25,5 @@ backend/*.db
 .DS_Store
 Thumbs.db
 .vscode/
+
+.ai

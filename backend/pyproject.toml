@@ -1,0 +1,42 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "celery==5.3.6",
+    "channels>=4.3.2",
+    "daphne>=4.2.1",
+    "django>=5.2",
+    "django-cors-headers>=4.9.0",
+    "djangorestframework>=3.15.2",
+    "opencv-python-headless==4.10.0.84",
+    "pillow>=11.0.0",
+    "python-dotenv==1.0.1",
+    "redis==5.0.8",
+    "reportlab==4.2.4",
+    "torch",
+    "torchvision",
+    "ultralytics>=8.3.53",
+    "lap>=0.5.12",
+    "requests>=2.31",
+    "urllib3>=2.0",
+    "charset-normalizer>=3.0",
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+torchvision = { index = "pytorch-cpu" }
+requests = { index = "pypi" }
+urllib3 = { index = "pypi" }
+charset-normalizer = { index = "pypi" }
+chardet = { index = "pypi" }
