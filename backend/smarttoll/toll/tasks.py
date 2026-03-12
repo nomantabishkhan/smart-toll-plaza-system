@@ -16,6 +16,7 @@ except Exception as e:
     YOLO_IMPORT_ERROR = str(e)
 
 from .models import VideoUpload, VehicleLog, VehicleClass, DailyAudit, TollBooth
+from .broadcast import broadcast_vehicle_detected, broadcast_stats_update
 
 logger = logging.getLogger(__name__)
 _MODEL = None
@@ -125,6 +126,16 @@ def process_video_upload_task(video_upload_id: str):
                             source_video=upload,
                         )
                         total_detections += 1
+
+                        # Push real-time event to WebSocket clients
+                        try:
+                            broadcast_vehicle_detected(
+                                vehicle_class_name=vehicle_class.class_name,
+                                confidence=confidence,
+                                booth_name=booth.booth_name if booth else "",
+                            )
+                        except Exception:
+                            pass  # Don't let broadcast failures break processing
                 
             except Exception:
                 logger.exception("Frame inference failed for upload %s", video_upload_id)

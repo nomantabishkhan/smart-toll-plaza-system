@@ -7,7 +7,7 @@ from django.db.models import Sum, Count
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from .models import VehicleLog, DailyAudit, VideoUpload, VehicleClass, TollBooth
-from .serializers import VideoUploadSerializer
+from .serializers import VideoUploadSerializer, VehicleClassSerializer
 from .tasks import process_video_upload_task, generate_daily_audit_task
 
 User = get_user_model()
@@ -17,16 +17,53 @@ router = routers.DefaultRouter()
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
+def vehicle_classes(request):
+    """Return all configured vehicle classes with toll rates."""
+    qs = VehicleClass.objects.filter(is_active=True).order_by("id")
+    serializer = VehicleClassSerializer(qs, many=True)
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
 def live_stats(request):
+    """Aggregated counts for today, broken down by vehicle class."""
     now = timezone.now()
     today = now.date()
-    total_today = VehicleLog.objects.filter(timestamp__date=today).count()
-    per_class = (
-        VehicleLog.objects.filter(timestamp__date=today)
-        .values("vehicle_class__class_name")
+    logs_today = VehicleLog.objects.filter(timestamp__date=today)
+    total_today = logs_today.count()
+
+    per_class = list(
+        logs_today
+        .values("vehicle_class__id", "vehicle_class__class_name")
         .annotate(count=Count("id"))
+        .order_by("vehicle_class__id")
     )
-    return Response({"total": total_today, "by_class": list(per_class)})
+
+    # Fill in zero-count classes so the frontend always gets all classes
+    active_classes = VehicleClass.objects.filter(is_active=True).order_by("id")
+    counted_ids = {item["vehicle_class__id"] for item in per_class}
+    for vc in active_classes:
+        if vc.id not in counted_ids:
+            per_class.append({
+                "vehicle_class__id": vc.id,
+                "vehicle_class__class_name": vc.class_name,
+                "count": 0,
+            })
+    per_class.sort(key=lambda x: x["vehicle_class__id"])
+
+    # Estimated revenue
+    revenue = sum(
+        item["count"] * float(VehicleClass.objects.get(id=item["vehicle_class__id"]).toll_rate)
+        for item in per_class
+    )
+
+    return Response({
+        "date": str(today),
+        "total": total_today,
+        "revenue_estimated": round(revenue, 2),
+        "by_class": per_class,
+    })
 
 
 @api_view(["GET"])
@@ -38,6 +75,31 @@ def hourly_stats(request):
         for h in range(24)
     ]
     return Response({"date": str(today), "hourly": hourly})
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def recent_events(request):
+    """Return the most recent vehicle crossing events (last 50)."""
+    limit = int(request.query_params.get("limit", 50))
+    limit = min(limit, 200)
+    logs = (
+        VehicleLog.objects
+        .select_related("vehicle_class", "booth")
+        .order_by("-timestamp")[:limit]
+    )
+    data = [
+        {
+            "id": str(log.id),
+            "vehicle_class": log.vehicle_class.class_name,
+            "vehicle_class_id": log.vehicle_class.id,
+            "confidence": round(log.confidence_score, 3),
+            "booth": log.booth.booth_name if log.booth else None,
+            "timestamp": log.timestamp.isoformat(),
+        }
+        for log in logs
+    ]
+    return Response(data)
 
 
 @api_view(["POST"])
@@ -102,8 +164,10 @@ def export_audit(request):
 
 
 urlpatterns = [
+    path("vehicle-classes/", vehicle_classes),
     path("stats/live/", live_stats),
     path("stats/hourly/", hourly_stats),
+    path("events/recent/", recent_events),
     path("upload/video/", upload_video),
     path("upload/status/", upload_status),
     path("audit/export/", export_audit),
