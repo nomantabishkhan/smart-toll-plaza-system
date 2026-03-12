@@ -1,12 +1,13 @@
 from django.urls import path
 from rest_framework import routers
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from django.db.models import Sum, Count
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.permissions import AllowAny
+from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Count
 from django.utils import timezone
 from django.contrib.auth import get_user_model
-from .models import VehicleLog, DailyAudit, VideoUpload, VehicleClass, TollBooth
+from .models import VehicleLog, VideoUpload, VehicleClass
 from .serializers import VideoUploadSerializer, VehicleClassSerializer
 from .tasks import process_video_upload_task, generate_daily_audit_task
 
@@ -102,7 +103,9 @@ def recent_events(request):
     return Response(data)
 
 
+@csrf_exempt
 @api_view(["POST"])
+@authentication_classes([])
 @permission_classes([AllowAny])
 def upload_video(request):
     """
@@ -144,6 +147,7 @@ def upload_status(request):
         return Response({
             "id": str(upload.id),
             "status": upload.processing_status,
+            "progress": upload.progress,
             "file_name": upload.file_name,
             "log": upload.log,
             "upload_timestamp": upload.upload_timestamp,

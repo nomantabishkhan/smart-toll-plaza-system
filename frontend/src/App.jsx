@@ -1,95 +1,77 @@
-import { useState, useEffect, useCallback } from 'react';
-import { fetchLiveStats } from './api';
+import { Routes, Route, NavLink } from 'react-router-dom';
+import { LayoutDashboard, BarChart3, Upload as UploadIcon, Radar } from 'lucide-react';
 import { useWebSocket } from './hooks/useWebSocket';
-import StatsBar from './components/StatsBar';
-import VehicleClassCards from './components/VehicleClassCards';
-import HourlyChart from './components/HourlyChart';
-import EventFeed from './components/EventFeed';
-import VideoUpload from './components/VideoUpload';
+import Dashboard from './pages/Dashboard';
+import Analytics from './pages/Analytics';
+import Upload from './pages/Upload';
+
+const NAV = [
+  { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/analytics', label: 'Analytics', icon: BarChart3 },
+  { to: '/upload', label: 'Upload', icon: UploadIcon },
+];
 
 function App() {
-  const [stats, setStats] = useState({
-    total: 0,
-    revenue_estimated: 0,
-    by_class: [],
-  });
-
   const { lastEvent, connected } = useWebSocket();
 
-  // Fetch stats on mount + periodically
-  const refreshStats = useCallback(() => {
-    fetchLiveStats()
-      .then(setStats)
-      .catch(console.error);
-  }, []);
-
-  useEffect(() => {
-    refreshStats();
-    const id = setInterval(refreshStats, 5_000);
-    return () => clearInterval(id);
-  }, [refreshStats]);
-
-  // Also refresh when a WebSocket event arrives
-  useEffect(() => {
-    if (lastEvent?.type === 'vehicle_detected') {
-      refreshStats();
-    }
-  }, [lastEvent, refreshStats]);
-
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">🛣️</span>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">
-                Smart Toll Plaza System
-              </h1>
-              <p className="text-xs text-gray-500">
-                Real-Time Vehicle Detection &amp; Classification
-              </p>
-            </div>
-          </div>
+    <div className="min-h-screen flex bg-gray-50">
+      {/* Sidebar */}
+      <aside className="w-56 bg-gray-900 text-white flex flex-col shrink-0">
+        <div className="px-5 py-6 border-b border-gray-700">
+          <h1 className="text-lg font-bold leading-tight flex items-center gap-2">
+            <Radar className="w-5 h-5 text-blue-400" />
+            Smart Toll Plaza
+          </h1>
+          <p className="text-[11px] text-gray-400 mt-1">Vehicle Detection System</p>
+        </div>
+        <nav className="flex-1 py-4 space-y-1 px-3">
+          {NAV.map((n) => (
+            <NavLink
+              key={n.to}
+              to={n.to}
+              end={n.to === '/'}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                }`
+              }
+            >
+              <n.icon className="w-4 h-4" />
+              {n.label}
+            </NavLink>
+          ))}
+        </nav>
+        <div className="px-5 py-4 border-t border-gray-700 text-xs text-gray-500">
           <div className="flex items-center gap-2">
             <span
-              className={`inline-block h-2.5 w-2.5 rounded-full ${
-                connected ? 'bg-green-500 animate-pulse' : 'bg-red-500'
+              className={`inline-block h-2 w-2 rounded-full ${
+                connected ? 'bg-green-400 animate-pulse' : 'bg-red-500'
               }`}
             />
-            <span className="text-xs text-gray-500">
-              {connected ? 'Live' : 'Offline'}
-            </span>
+            {connected ? 'WebSocket Live' : 'WebSocket Offline'}
           </div>
         </div>
-      </header>
+      </aside>
 
       {/* Main content */}
-      <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-        <StatsBar
-          total={stats.total}
-          revenue={stats.revenue_estimated}
-          connected={connected}
-        />
-
-        <VehicleClassCards byClass={stats.by_class} />
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <HourlyChart />
-          <EventFeed latestWsEvent={lastEvent} />
-        </div>
-
-        <VideoUpload />
-      </main>
-
-      {/* Footer */}
-      <footer className="text-center text-xs text-gray-400 py-6">
-        Smart Toll Plaza System &copy; {new Date().getFullYear()} — The Islamia
-        University of Bahawalpur
-      </footer>
+      <div className="flex-1 flex flex-col min-w-0">
+        <main className="flex-1 p-6 overflow-y-auto">
+          <Routes>
+            <Route path="/" element={<Dashboard lastEvent={lastEvent} connected={connected} />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/upload" element={<Upload />} />
+          </Routes>
+        </main>
+        <footer className="text-center text-xs text-gray-400 py-4 border-t border-gray-200">
+          Smart Toll Plaza System &copy; {new Date().getFullYear()} — The Islamia University of Bahawalpur
+        </footer>
+      </div>
     </div>
   );
 }
 
 export default App;
+

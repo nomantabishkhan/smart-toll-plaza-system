@@ -1,60 +1,63 @@
 import { useState, useEffect } from 'react';
 import { fetchHourlyStats } from '../api';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 
 export default function HourlyChart() {
-  const [hourly, setHourly] = useState(Array(24).fill(0));
+  const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetchHourlyStats()
-      .then((data) => setHourly(data.hourly))
-      .catch(console.error);
-
-    const id = setInterval(() => {
+    const load = () =>
       fetchHourlyStats()
-        .then((data) => setHourly(data.hourly))
+        .then((d) =>
+          setData(
+            d.hourly.map((count, h) => ({
+              hour: `${String(h).padStart(2, '0')}:00`,
+              vehicles: count,
+            })),
+          ),
+        )
         .catch(console.error);
-    }, 30_000);
+
+    load();
+    const id = setInterval(load, 30_000);
     return () => clearInterval(id);
   }, []);
-
-  const max = Math.max(...hourly, 1);
 
   return (
     <div className="rounded-xl bg-white shadow border border-gray-200 p-5">
       <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
         Hourly Traffic
       </h3>
-      <div className="flex items-end gap-1 h-40">
-        {hourly.map((count, hour) => {
-          const pct = (count / max) * 100;
-          const now = new Date().getHours();
-          const isCurrent = hour === now;
-          return (
-            <div
-              key={hour}
-              className="flex-1 flex flex-col items-center group relative"
-            >
-              {/* Tooltip */}
-              <span className="absolute -top-6 hidden group-hover:block text-xs bg-gray-800 text-white rounded px-2 py-0.5 whitespace-nowrap">
-                {hour}:00 — {count}
-              </span>
-              <div
-                className={`w-full rounded-t transition-all ${
-                  isCurrent
-                    ? 'bg-blue-500'
-                    : count > 0
-                      ? 'bg-blue-300'
-                      : 'bg-gray-200'
-                }`}
-                style={{ height: `${Math.max(pct, 2)}%` }}
-              />
-              {hour % 3 === 0 && (
-                <span className="text-[10px] text-gray-400 mt-1">{hour}</span>
-              )}
-            </div>
-          );
-        })}
-      </div>
+      <ResponsiveContainer width="100%" height={220}>
+        <AreaChart data={data}>
+          <defs>
+            <linearGradient id="colorVehicles" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+          <XAxis dataKey="hour" tick={{ fontSize: 10 }} interval={2} />
+          <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
+          <Tooltip />
+          <Area
+            type="monotone"
+            dataKey="vehicles"
+            stroke="#3b82f6"
+            fill="url(#colorVehicles)"
+            strokeWidth={2}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
     </div>
   );
 }
+

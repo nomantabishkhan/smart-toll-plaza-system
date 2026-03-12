@@ -4,6 +4,7 @@ Call these functions from tasks.py or views.py after creating a VehicleLog.
 """
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from django.utils import timezone
 
 
 def broadcast_vehicle_detected(vehicle_class_name: str, confidence: float, booth_name: str = ""):
@@ -19,6 +20,7 @@ def broadcast_vehicle_detected(vehicle_class_name: str, confidence: float, booth
                 "vehicle_class": vehicle_class_name,
                 "confidence": round(confidence, 3),
                 "booth": booth_name,
+                "timestamp": timezone.now().isoformat(),
             },
         },
     )

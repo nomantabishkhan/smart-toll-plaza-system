@@ -1,36 +1,39 @@
-const API_BASE = '/api';
+import axios from 'axios';
+
+const api = axios.create({ baseURL: '/api' });
 
 export async function fetchLiveStats() {
-  const res = await fetch(`${API_BASE}/stats/live/`);
-  if (!res.ok) throw new Error('Failed to fetch live stats');
-  return res.json();
+  const { data } = await api.get('/stats/live/');
+  return data;
 }
 
 export async function fetchHourlyStats() {
-  const res = await fetch(`${API_BASE}/stats/hourly/`);
-  if (!res.ok) throw new Error('Failed to fetch hourly stats');
-  return res.json();
+  const { data } = await api.get('/stats/hourly/');
+  return data;
 }
 
 export async function fetchRecentEvents(limit = 50) {
-  const res = await fetch(`${API_BASE}/events/recent/?limit=${limit}`);
-  if (!res.ok) throw new Error('Failed to fetch recent events');
-  return res.json();
+  const { data } = await api.get('/events/recent/', { params: { limit } });
+  return data;
 }
 
 export async function fetchVehicleClasses() {
-  const res = await fetch(`${API_BASE}/vehicle-classes/`);
-  if (!res.ok) throw new Error('Failed to fetch vehicle classes');
-  return res.json();
+  const { data } = await api.get('/vehicle-classes/');
+  return data;
 }
 
-export async function uploadVideo(file) {
-  const formData = new FormData();
-  formData.append('file', file);
-  const res = await fetch(`${API_BASE}/upload/video/`, {
-    method: 'POST',
-    body: formData,
+export async function uploadVideo(file, onUploadProgress) {
+  const form = new FormData();
+  form.append('file', file);
+  const { data } = await api.post('/upload/video/', form, {
+    onUploadProgress: onUploadProgress
+      ? (e) => onUploadProgress(Math.round((e.loaded * 100) / (e.total || 1)))
+      : undefined,
   });
-  if (!res.ok) throw new Error('Failed to upload video');
-  return res.json();
+  return data;
+}
+
+export async function fetchUploadStatus(id) {
+  const { data } = await api.get('/upload/status/', { params: { id } });
+  return data;
 }
