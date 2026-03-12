@@ -62,7 +62,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard lastEvent={lastEvent} connected={connected} />} />
             <Route path="/analytics" element={<Analytics />} />
-            <Route path="/upload" element={<Upload />} />
+            <Route path="/upload" element={<Upload lastEvent={lastEvent} />} />
           </Routes>
         </main>
         <footer className="text-center text-xs text-gray-400 py-4 border-t border-gray-200">

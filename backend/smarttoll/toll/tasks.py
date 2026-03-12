@@ -149,6 +149,12 @@ def process_video_upload_task(video_upload_id: str):
                                     pass
                 else:
                     # ---- Real YOLO + BoT-SORT tracking ----
+                    # Resize to 640px wide for faster CPU inference
+                    h, w = frame.shape[:2]
+                    if w > 640:
+                        scale = 640 / w
+                        frame = cv2.resize(frame, (640, int(h * scale)))
+
                     results = yolo_model.track(
                         frame, conf=0.30, persist=True, tracker="botsort.yaml", verbose=False
                     )
@@ -188,8 +194,8 @@ def process_video_upload_task(video_upload_id: str):
                                 except Exception:
                                     pass
 
-                # Progress update every 500 frames
-                if frame_count % 500 == 0 and total_frames > 0:
+                # Progress update every 100 frames
+                if frame_count % 100 == 0 and total_frames > 0:
                     pct = min(int(frame_count / total_frames * 100), 99)
                     upload.progress = pct
                     upload.log = f"Processing… {pct}% ({total_detections} vehicles detected)"

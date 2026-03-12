@@ -90,14 +90,14 @@ The Vite dev server proxies `/api` and `/ws` requests to the Django backend at p
 
 | ID | Class | Toll Rate |
 |----|-------|-----------|
-| 0 | Auto | ₹30 |
-| 1 | Bus | ₹100 |
-| 2 | Car | ₹50 |
-| 3 | LCV | ₹120 |
-| 4 | Motorcycle | ₹20 |
-| 5 | Multiaxle | ₹200 |
-| 6 | Tractor | ₹80 |
-| 7 | Truck | ₹150 |
+| 0 | Auto | Rs.30 |
+| 1 | Bus | Rs.100 |
+| 2 | Car | Rs.50 |
+| 3 | LCV | Rs.120 |
+| 4 | Motorcycle | Rs.20 |
+| 5 | Multiaxle | Rs.200 |
+| 6 | Tractor | Rs.80 |
+| 7 | Truck | Rs.150 |
 
 ## Access
 

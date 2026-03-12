@@ -41,7 +41,7 @@ def populate_classes():
             }
         )
         status = "✅ Created" if created else "♻️  Updated"
-        print(f"{status} | ID: {class_id} | {name:15} | ₹{rate:7.2f}")
+        print(f"{status} | ID: {class_id} | {name:15} | Rs.{rate:7.2f}")
     
     print("-" * 50)
     print(f"✅ Successfully populated {len(VEHICLE_CLASSES)} vehicle classes!")

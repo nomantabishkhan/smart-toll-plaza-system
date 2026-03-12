@@ -96,37 +96,21 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.BasicAuthentication",
-    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [],
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.AllowAny",
     ],
 }
 
-# Celery Configuration for Windows (Database Backend)
-# For production, use Redis. For Windows dev/demo, database backend works without Redis setup.
-USE_EAGER_CELERY = os.getenv("USE_EAGER_CELERY", "false").lower() == "true"
-
-if USE_EAGER_CELERY:
-    # Synchronous mode - tasks run immediately (blocks web server)
-    CELERY_TASK_ALWAYS_EAGER = True
-    CELERY_TASK_EAGER_PROPAGATES = True
-    CELERY_BROKER_URL = "memory://"
-    CELERY_RESULT_BACKEND = "db+sqlite:///" + str(BASE_DIR / "celery_results.db")
-else:
-    # Asynchronous mode - tasks run in background worker
-    # Using database as message broker (Windows-friendly, no Redis required)
-    CELERY_BROKER_URL = "sqla+sqlite:///" + str(BASE_DIR / "celery_broker.db")
-    CELERY_RESULT_BACKEND = "db+sqlite:///" + str(BASE_DIR / "celery_results.db")
-    CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-    
+# Celery Configuration (Redis)
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 60 * 60  # 1 hour timeout
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
 
 # YOLOv8 Model Configuration
 MODEL_DIR = BASE_DIR.parent / "models"

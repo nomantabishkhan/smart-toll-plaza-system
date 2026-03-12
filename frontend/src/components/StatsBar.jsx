@@ -1,4 +1,4 @@
-import { Car, IndianRupee, Wifi, WifiOff } from 'lucide-react';
+import { Car, DollarSign, Wifi, WifiOff } from 'lucide-react';
 
 export default function StatsBar({ total, revenue, connected }) {
   const cards = [
@@ -10,8 +10,8 @@ export default function StatsBar({ total, revenue, connected }) {
     },
     {
       label: 'Est. Revenue',
-      value: `₹${Number(revenue).toLocaleString()}`,
-      icon: <IndianRupee className="w-5 h-5 text-green-500" />,
+      value: `Rs.${Number(revenue).toLocaleString()}`,
+      icon: <DollarSign className="w-5 h-5 text-green-500" />,
       color: 'border-green-400',
     },
     {
