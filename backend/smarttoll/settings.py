@@ -112,8 +112,13 @@ CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 
+# Eager mode (runs tasks synchronously — useful for Windows dev without a Celery worker)
+if os.getenv("USE_EAGER_CELERY", "false").lower() == "true":
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = True  # propagates exceptions instead of swallowing them
+
 # YOLOv8 Model Configuration
-MODEL_DIR = BASE_DIR.parent / "models"
+MODEL_DIR = BASE_DIR.parent / "models"   # backend/../models = project_root/models
 YOLO_MODEL_PATH = os.getenv("YOLO_MODEL_PATH", str(MODEL_DIR / "best.pt"))
 
 # OpenVINO paths (alternative inference backend)
