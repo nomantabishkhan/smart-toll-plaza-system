@@ -2,7 +2,7 @@
 
 Real-time vehicle detection and classification system for toll plaza auditing, built as an FYP at The Islamia University of Bahawalpur.
 
-Uses YOLOv8 to detect **8 vehicle classes** (Auto, Bus, Car, LCV, Motorcycle, Multiaxle, Tractor, Truck) from live camera feeds or uploaded video files, counts crossings, and estimates revenue.
+Uses YOLOv11 to detect **6 vehicle classes** (car, bus, truck, bike, person, 3wheeler) from live camera feeds or uploaded video files, counts crossings, and estimates revenue.
 
 ## Tech Stack
 
@@ -11,7 +11,7 @@ Uses YOLOv8 to detect **8 vehicle classes** (Auto, Bus, Car, LCV, Motorcycle, Mu
 | Backend | Python, Django 6, Django REST Framework |
 | Real-time | Django Channels (WebSocket via Daphne) |
 | Background tasks | Celery + SQLite broker (Redis optional) |
-| AI / CV | YOLOv8 (Ultralytics), OpenCV |
+| AI / CV | YOLOv11 (Ultralytics), OpenCV |
 | Frontend | React, Tailwind CSS, Vite |
 | Database | SQLite (dev) / PostgreSQL (prod) |
 
@@ -86,18 +86,16 @@ The Vite dev server proxies `/api` and `/ws` requests to the Django backend at p
 | GET | `/api/upload/status/?id=` | Check upload processing status |
 | WS | `/ws/toll/dashboard/` | Real-time detection push events |
 
-## Vehicle Classes (YOLO Model Output)
+## Vehicle Classes
 
 | ID | Class | Toll Rate |
 |----|-------|-----------|
-| 0 | Auto | Rs.30 |
-| 1 | Bus | Rs.100 |
-| 2 | Car | Rs.50 |
-| 3 | LCV | Rs.120 |
-| 4 | Motorcycle | Rs.20 |
-| 5 | Multiaxle | Rs.200 |
-| 6 | Tractor | Rs.80 |
-| 7 | Truck | Rs.150 |
+| 0 | car | Rs.40 |
+| 1 | bus | Rs.100 |
+| 2 | truck | Rs.150 |
+| 3 | bike | Rs.20 |
+| 4 | person | Rs.10 |
+| 5 | 3wheeler | Rs.30 |
 
 ## Access
 
