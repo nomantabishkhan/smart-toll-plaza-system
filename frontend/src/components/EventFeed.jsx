@@ -10,12 +10,14 @@ function timeAgo(isoString) {
 }
 
 const CLASS_DOT_COLORS = {
-  car: 'bg-green-500',
-  truck: 'bg-teal-500',
-  bus: 'bg-blue-500',
-  bike: 'bg-red-500',
-  person: 'bg-orange-500',
-  '3wheeler': 'bg-yellow-500',
+  Auto: "bg-yellow-500",
+  Bus: "bg-blue-500",
+  Car: "bg-green-500",
+  LCV: "bg-purple-500",
+  Motorcycle: "bg-red-500",
+  Multiaxle: "bg-indigo-500",
+  Tractor: "bg-orange-500",
+  Truck: "bg-teal-500",
 };
 
 export default function EventFeed({ latestWsEvent }) {
