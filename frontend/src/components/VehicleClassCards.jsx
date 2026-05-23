@@ -1,23 +1,19 @@
 const VEHICLE_ICONS = {
-  Auto: '🛺',
-  Bus: '🚌',
-  Car: '🚗',
-  LCV: '🚐',
-  Motorcycle: '🏍️',
-  Multiaxle: '🚛',
-  Tractor: '🚜',
-  Truck: '🚚',
+  car: '🚗',
+  truck: '🚚',
+  bus: '🚌',
+  bike: '🏍️',
+  person: '🚶',
+  '3wheeler': '🛺',
 };
 
 const VEHICLE_COLORS = {
-  Auto: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-  Bus: 'bg-blue-100 text-blue-800 border-blue-300',
-  Car: 'bg-green-100 text-green-800 border-green-300',
-  LCV: 'bg-purple-100 text-purple-800 border-purple-300',
-  Motorcycle: 'bg-red-100 text-red-800 border-red-300',
-  Multiaxle: 'bg-indigo-100 text-indigo-800 border-indigo-300',
-  Tractor: 'bg-orange-100 text-orange-800 border-orange-300',
-  Truck: 'bg-teal-100 text-teal-800 border-teal-300',
+  car: 'bg-green-100 text-green-800 border-green-300',
+  truck: 'bg-teal-100 text-teal-800 border-teal-300',
+  bus: 'bg-blue-100 text-blue-800 border-blue-300',
+  bike: 'bg-red-100 text-red-800 border-red-300',
+  person: 'bg-orange-100 text-orange-800 border-orange-300',
+  '3wheeler': 'bg-yellow-100 text-yellow-800 border-yellow-300',
 };
 
 export default function VehicleClassCards({ byClass }) {
